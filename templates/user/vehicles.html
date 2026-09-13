@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}My Vehicles - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">My Vehicles</h3>
+        <p class="text-muted mb-0">Register and manage your cars, motorcycles, or bicycles for parking reservations</p>
+    </div>
+    <a href="{% url 'vehicle_add' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add New Vehicle
+    </a>
+</div>
+
+<div class="content-card">
+    {% if vehicles %}
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Vehicle Number</th>
+                        <th>Type</th>
+                        <th>Brand &amp; Model</th>
+                        <th>Registered Date</th>
+                        <th>Active Bookings</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vehicles %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark border fs-6 px-3 py-2 fw-bold">
+                                    <i class="bi bi-tag-fill text-secondary me-1"></i> {{ v.vehicle_number }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if v.vehicle_type == 'CAR' %}
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-car-front-fill me-1"></i> Car</span>
+                                {% elif v.vehicle_type == 'MOTORCYCLE' %}
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle"><i class="bi bi-bicycle me-1"></i> Motorcycle</span>
+                                {% elif v.vehicle_type == 'BICYCLE' %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-bicycle me-1"></i> Bicycle</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Other</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ v.vehicle_brand }}</div>
+                                <small class="text-muted">{{ v.vehicle_model }}</small>
+                            </td>
+                            <td>{{ v.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% with active_count=v.bookings.filter.count %}
+                                    {% if v.bookings.all %}
+                                        <span class="badge bg-light text-dark border">{{ v.bookings.count }} total</span>
+                                    {% else %}
+                                        <span class="text-muted small">None</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'vehicle_edit' v.pk %}" class="btn btn-outline-secondary" title="Edit Vehicle">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <a href="{% url 'vehicle_delete' v.pk %}" class="btn btn-outline-danger" title="Delete Vehicle">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-car-front display-4 text-muted"></i>
+            <h5 class="fw-bold mt-3">No Vehicles Registered</h5>
+            <p class="text-muted mb-3">You need to register your vehicle before you can reserve a parking slot.</p>
+            <a href="{% url 'vehicle_add' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Add Your First Vehicle
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

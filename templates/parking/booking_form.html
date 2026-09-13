@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Book a Parking Slot - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <a href="{% url 'parking_slots' %}" class="text-decoration-none small text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Slot Map
+            </a>
+            <h3 class="fw-bold text-dark mt-2 mb-1">Reserve a Parking Slot</h3>
+            <p class="text-muted mb-0">Select your registered vehicle and available slot to generate your booking reference</p>
+        </div>
+
+        <!-- Visual Step Indicator -->
+        <div class="d-none d-md-flex justify-content-between mb-4 p-3 bg-white border rounded-3 shadow-sm text-center">
+            <div class="flex-fill">
+                <span class="badge bg-primary rounded-pill mb-1">1</span>
+                <div class="small fw-bold text-dark">Select Vehicle</div>
+            </div>
+            <i class="bi bi-chevron-right text-muted align-self-center"></i>
+            <div class="flex-fill">
+                <span class="badge bg-primary rounded-pill mb-1">2</span>
+                <div class="small fw-bold text-dark">Choose Slot</div>
+            </div>
+            <i class="bi bi-chevron-right text-muted align-self-center"></i>
+            <div class="flex-fill">
+                <span class="badge bg-primary rounded-pill mb-1">3</span>
+                <div class="small fw-bold text-dark">Select Date/Time</div>
+            </div>
+            <i class="bi bi-chevron-right text-muted align-self-center"></i>
+            <div class="flex-fill">
+                <span class="badge bg-primary rounded-pill mb-1">4</span>
+                <div class="small fw-bold text-dark">Confirm &amp; Reserve</div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            {% if selected_slot %}
+                <div class="alert alert-success d-flex align-items-center mb-4">
+                    <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+                    <div>
+                        <strong>Selected Slot: {{ selected_slot.slot_number }}</strong>
+                        <span class="text-muted">in {{ selected_slot.parking_area.name }} ({{ selected_slot.get_vehicle_type_display }})</span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Step 1: Select Vehicle -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark d-flex justify-content-between">
+                        <span>1. Select Your Registered Vehicle *</span>
+                        <a href="{% url 'vehicle_add' %}" class="small text-primary text-decoration-none fw-normal">
+                            + Add New Vehicle
+                        </a>
+                    </label>
+                    {{ form.vehicle }}
+                    {% if form.vehicle.errors %}
+                        <div class="text-danger small mt-1">{{ form.vehicle.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Step 2: Select Slot -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">2. Select Parking Slot *</label>
+                    {{ form.parking_slot }}
+                    <small class="text-muted">Only available slots compatible with your vehicle type are shown.</small>
+                    {% if form.parking_slot.errors %}
+                        <div class="text-danger small mt-1">{{ form.parking_slot.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Step 3: Date and Expected Arrival Time -->
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-bold text-dark">3. Booking Date *</label>
+                        {{ form.booking_date }}
+                        {% if form.booking_date.errors %}
+                            <div class="text-danger small mt-1">{{ form.booking_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-bold text-dark">4. Expected Arrival Time *</label>
+                        {{ form.expected_arrival_time }}
+                        {% if form.expected_arrival_time.errors %}
+                            <div class="text-danger small mt-1">{{ form.expected_arrival_time.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small mb-3">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
+
+                <!-- Important Reservation Notes -->
+                <div class="alert alert-light border small text-muted mb-4">
+                    <i class="bi bi-info-circle-fill text-primary me-1"></i>
+                    <strong>Important Note:</strong> Your slot status will immediately change to <strong>RESERVED</strong> upon submission.
+                    Staff will verify your vehicle number or reference at check-in. Parking fees are calculated automatically upon check-out.
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'parking_slots' %}" class="btn btn-light border px-3">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-bookmark-check-fill me-1"></i> Confirm Reservation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

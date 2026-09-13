@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}Parking Slots Visualization - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Live Parking Slot Visualization</h3>
+        <p class="text-muted mb-0">Interactive visual status of all parking bays across college premises and visitor zones</p>
+    </div>
+    <div>
+        <a href="{% url 'booking_create' %}" class="btn btn-primary">
+            <i class="bi bi-calendar-plus me-1"></i> Quick Reserve
+        </a>
+    </div>
+</div>
+
+<!-- Status Summary Badges & Rate Pill Guide -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="p-3 bg-white border rounded-3 d-flex align-items-center justify-content-between shadow-sm">
+            <div>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem;">Total Slots</small>
+                <h4 class="fw-bold mb-0 text-dark">{{ total_slots_count }}</h4>
+            </div>
+            <span class="badge bg-secondary rounded-pill p-2"><i class="bi bi-grid-fill"></i></span>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="p-3 bg-white border border-success-subtle rounded-3 d-flex align-items-center justify-content-between shadow-sm">
+            <div>
+                <small class="text-success text-uppercase fw-semibold" style="font-size: 0.75rem;">Available</small>
+                <h4 class="fw-bold mb-0 text-success">{{ available_count }}</h4>
+            </div>
+            <span class="badge bg-success rounded-pill p-2"><i class="bi bi-check-lg"></i></span>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="p-3 bg-white border border-danger-subtle rounded-3 d-flex align-items-center justify-content-between shadow-sm">
+            <div>
+                <small class="text-danger text-uppercase fw-semibold" style="font-size: 0.75rem;">Occupied</small>
+                <h4 class="fw-bold mb-0 text-danger">{{ occupied_count }}</h4>
+            </div>
+            <span class="badge bg-danger rounded-pill p-2"><i class="bi bi-car-front-fill"></i></span>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="p-3 bg-white border border-warning-subtle rounded-3 d-flex align-items-center justify-content-between shadow-sm">
+            <div>
+                <small class="text-warning text-uppercase fw-semibold" style="font-size: 0.75rem;">Reserved</small>
+                <h4 class="fw-bold mb-0 text-warning">{{ reserved_count }}</h4>
+            </div>
+            <span class="badge bg-warning rounded-pill p-2"><i class="bi bi-clock-fill"></i></span>
+        </div>
+    </div>
+</div>
+
+<!-- Search & Filter Bar (Requirement #11) -->
+<div class="content-card mb-4">
+    <form method="GET" action="{% url 'parking_slots' %}" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold text-secondary">Parking Area</label>
+            <select name="area" class="form-select">
+                <option value="">-- All Parking Areas --</option>
+                {% for a in areas %}
+                    <option value="{{ a.id }}" {% if selected_area == a.id|stringformat:"s" %}selected{% endif %}>
+                        {{ a.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold text-secondary">Vehicle Type</label>
+            <select name="vehicle_type" class="form-select">
+                <option value="">-- All Vehicle Types --</option>
+                {% for key, label in vehicle_types %}
+                    <option value="{{ key }}" {% if selected_type == key %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small fw-semibold text-secondary">Slot Status</label>
+            <select name="status" class="form-select">
+                <option value="">-- All Statuses --</option>
+                <option value="AVAILABLE" {% if selected_status == 'AVAILABLE' %}selected{% endif %}>Available</option>
+                <option value="OCCUPIED" {% if selected_status == 'OCCUPIED' %}selected{% endif %}>Occupied</option>
+                <option value="RESERVED" {% if selected_status == 'RESERVED' %}selected{% endif %}>Reserved</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small fw-semibold text-secondary">Search Slot / Area</label>
+            <input type="text" name="q" class="form-control" placeholder="e.g. A-01" value="{{ search_query }}">
+        </div>
+
+        <div class="col-md-2 d-flex gap-1">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
+            <a href="{% url 'parking_slots' %}" class="btn btn-light border" title="Reset Filters">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Visual Parking Slot Grid (Requirement #10) -->
+<div class="content-card">
+    <div class="card-header-clean">
+        <h5>
+            <i class="bi bi-layout-text-window-reverse text-primary"></i>
+            Slot Layout Map
+            <span class="text-muted fs-6 fw-normal ms-2">({{ slots.count }} slots displayed)</span>
+        </h5>
+        <!-- Visual Legend -->
+        <div class="d-flex align-items-center gap-3 small">
+            <span class="d-inline-flex align-items-center gap-1">
+                <span class="badge bg-success p-1 rounded-circle" style="width:10px;height:10px;"> </span> Available
+            </span>
+            <span class="d-inline-flex align-items-center gap-1">
+                <span class="badge bg-danger p-1 rounded-circle" style="width:10px;height:10px;"> </span> Occupied
+            </span>
+            <span class="d-inline-flex align-items-center gap-1">
+                <span class="badge bg-warning p-1 rounded-circle" style="width:10px;height:10px;"> </span> Reserved
+            </span>
+        </div>
+    </div>
+
+    {% if slots %}
+        <div class="slot-grid">
+            {% for s in slots %}
+                <div class="slot-card status-{{ s.status|lower }}"
+                     data-book-url="{% if s.status == 'AVAILABLE' %}{% url 'booking_create' %}?slot_id={{ s.id }}{% endif %}">
+                    <div>
+                        <span class="slot-area text-truncate d-block" title="{{ s.parking_area.name }}">
+                            {{ s.parking_area.name }}
+                        </span>
+                        <div class="slot-number">{{ s.slot_number }}</div>
+                        <div class="slot-type">
+                            {% if s.vehicle_type == 'CAR' %}
+                                <i class="bi bi-car-front text-primary"></i> Car
+                            {% elif s.vehicle_type == 'MOTORCYCLE' %}
+                                <i class="bi bi-bicycle text-info"></i> Motorcycle
+                            {% elif s.vehicle_type == 'BICYCLE' %}
+                                <i class="bi bi-bicycle text-success"></i> Bicycle
+                            {% else %}
+                                <i class="bi bi-truck text-secondary"></i> Other
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="mb-2">
+                            {% if s.status == 'AVAILABLE' %}
+                                <span class="status-badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i> Available
+                                </span>
+                            {% elif s.status == 'OCCUPIED' %}
+                                <span class="status-badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i> Occupied
+                                </span>
+                            {% else %}
+                                <span class="status-badge bg-warning text-dark">
+                                    <i class="bi bi-clock me-1"></i> Reserved
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        {% if s.status == 'AVAILABLE' %}
+                            <a href="{% url 'booking_create' %}?slot_id={{ s.id }}" class="btn btn-sm btn-success w-100 fw-bold">
+                                Book Now
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm btn-light border text-muted w-100" disabled>
+                                Unavailable
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-search display-5 text-muted"></i>
+            <h5 class="fw-bold mt-3">No Slots Match Your Criteria</h5>
+            <p class="text-muted">Try selecting a different area or clearing your filters.</p>
+            <a href="{% url 'parking_slots' %}" class="btn btn-outline-primary btn-sm">Reset All Filters</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

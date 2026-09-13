@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Parking Rates - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Hourly Parking Fee Rates</h3>
+        <p class="text-muted mb-0">Configure the hourly parking charges applied automatically on vehicle check-out</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Existing Rates Table -->
+    <div class="col-lg-7">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-cash-coin text-success"></i> Active Rate Configurations</h5>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Vehicle Category</th>
+                            <th>Hourly Rate</th>
+                            <th class="text-end">Update Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in rates %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold fs-6">
+                                        {% if r.vehicle_type == 'CAR' %}
+                                            <i class="bi bi-car-front-fill text-primary me-2"></i> Car
+                                        {% elif r.vehicle_type == 'MOTORCYCLE' %}
+                                            <i class="bi bi-bicycle text-info me-2"></i> Motorcycle
+                                        {% elif r.vehicle_type == 'BICYCLE' %}
+                                            <i class="bi bi-bicycle text-success me-2"></i> Bicycle
+                                        {% else %}
+                                            <i class="bi bi-truck text-secondary me-2"></i> Other
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fs-5 fw-bold text-dark">Rs. {{ r.hourly_rate }}</span>
+                                    <span class="text-muted small">/ hour</span>
+                                </td>
+                                <td class="text-end">
+                                    <form method="POST" class="d-inline-flex gap-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="rate_id" value="{{ r.id }}">
+                                        <input type="number" step="1.0" name="hourly_rate" class="form-control form-control-sm text-end" style="width: 100px;" value="{{ r.hourly_rate }}" required>
+                                        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">
+                                    No rates configured. Use the form to configure hourly parking rates.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-light border small text-muted mt-3 mb-0">
+                <i class="bi bi-info-circle text-primary me-1"></i>
+                <strong>Fee Calculation Rule:</strong> When a vehicle checks out, duration is computed as
+                <code>math.ceil((exit_time - entry_time) / 3600)</code> and multiplied by the vehicle's hourly rate.
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Rate Form -->
+    <div class="col-lg-5">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-plus-circle text-primary"></i> Add New Category Rate</h5>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Vehicle Type *</label>
+                    {{ form.vehicle_type }}
+                    {% if form.vehicle_type.errors %}
+                        <div class="text-danger small mt-1">{{ form.vehicle_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Hourly Rate (Rs.) *</label>
+                    {{ form.hourly_rate }}
+                    {% if form.hourly_rate.errors %}
+                        <div class="text-danger small mt-1">{{ form.hourly_rate.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i> Add / Configure Rate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,439 @@
+/* ==========================================================================
+   SMART PARKING MANAGEMENT SYSTEM - MASTER STYLESHEET
+   Bootstrap 5 Enhanced Clean & Professional Academic UI
+   ========================================================================== */
+
+:root {
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --secondary-color: #475569;
+    --success-color: #10b981;
+    --success-light: #ecfdf5;
+    --warning-color: #f59e0b;
+    --warning-light: #fffbeb;
+    --danger-color: #ef4444;
+    --danger-light: #fef2f2;
+    --dark-bg: #0f172a;
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: #334155;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    --border-color: #e2e8f0;
+    --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: #f8fafc;
+    color: #1e293b;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   LAYOUT STRUCTURE
+   ========================================================================== */
+
+.app-wrapper {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 60px);
+}
+
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: #cbd5e1;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    z-index: 1020;
+}
+
+.sidebar .brand-title {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sidebar-menu {
+    padding: 1rem 0;
+    list-style: none;
+    margin: 0;
+    flex: 1;
+}
+
+.sidebar-menu .nav-header {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.75rem 1.5rem 0.35rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.sidebar-menu .nav-item {
+    margin: 0.15rem 0.75rem;
+}
+
+.sidebar-menu .nav-link {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.sidebar-menu .nav-link:hover {
+    color: #ffffff;
+    background-color: var(--sidebar-hover);
+}
+
+.sidebar-menu .nav-link.active {
+    color: #ffffff;
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.sidebar-menu .nav-link i {
+    font-size: 1.15rem;
+}
+
+.main-content {
+    flex: 1;
+    padding: 1.75rem 2rem;
+    background-color: #f8fafc;
+    overflow-y: auto;
+}
+
+/* ==========================================================================
+   NAVBAR
+   ========================================================================== */
+
+.app-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.65rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.3rem 0.75rem;
+    background-color: #f1f5f9;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.role-pill {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.role-pill.role-admin { background-color: #fee2e2; color: #dc2626; }
+.role-pill.role-staff { background-color: #fef3c7; color: #b45309; }
+.role-pill.role-customer { background-color: #dbeafe; color: #1d4ed8; }
+
+/* ==========================================================================
+   STAT CARDS & DASHBOARD
+   ========================================================================== */
+
+.stat-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.stat-card .stat-icon.icon-blue { background-color: var(--primary-light); color: var(--primary-color); }
+.stat-card .stat-icon.icon-green { background-color: var(--success-light); color: var(--success-color); }
+.stat-card .stat-icon.icon-yellow { background-color: var(--warning-light); color: var(--warning-color); }
+.stat-card .stat-icon.icon-red { background-color: var(--danger-light); color: var(--danger-color); }
+
+.stat-card .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+    margin-top: 0.25rem;
+}
+
+.stat-card .stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   PARKING SLOT VISUALIZATION GRID
+   ========================================================================== */
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.slot-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    padding: 1rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.25s ease;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.slot-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Available - Green */
+.slot-card.status-available {
+    border-color: #10b981;
+    background: linear-gradient(180deg, #ffffff 60%, #ecfdf5 100%);
+}
+.slot-card.status-available .status-badge {
+    background-color: #10b981;
+    color: #ffffff;
+}
+
+/* Occupied - Red */
+.slot-card.status-occupied {
+    border-color: #ef4444;
+    background: linear-gradient(180deg, #ffffff 60%, #fef2f2 100%);
+}
+.slot-card.status-occupied .status-badge {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+/* Reserved - Yellow/Amber */
+.slot-card.status-reserved {
+    border-color: #f59e0b;
+    background: linear-gradient(180deg, #ffffff 60%, #fffbeb 100%);
+}
+.slot-card.status-reserved .status-badge {
+    background-color: #f59e0b;
+    color: #ffffff;
+}
+
+.slot-card .slot-number {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.05em;
+    margin: 0.4rem 0 0.1rem;
+}
+
+.slot-card .slot-area {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.slot-card .slot-type {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    margin: 0.4rem 0 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.slot-card .status-badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   CONTENT CARDS, TABLES, FORMS
+   ========================================================================== */
+
+.content-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.content-card .card-header-clean {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.content-card .card-header-clean h5 {
+    margin: 0;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.table-custom {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-custom thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.85rem 1rem;
+}
+
+.table-custom tbody td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    font-size: 0.92rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-custom tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Status Badges */
+.badge-status {
+    padding: 0.35rem 0.65rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-available { background-color: #ecfdf5; color: #059669; }
+.badge-occupied { background-color: #fef2f2; color: #dc2626; }
+.badge-reserved { background-color: #fffbeb; color: #d97706; }
+.badge-active { background-color: #eff6ff; color: #2563eb; }
+.badge-completed { background-color: #f1f5f9; color: #475569; }
+.badge-cancelled { background-color: #fee2e2; color: #b91c1c; }
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+/* Authentication Page */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.auth-header .logo-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 1rem;
+}
+
+/* Footer */
+.app-footer {
+    background-color: #ffffff;
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    color: #64748b;
+}

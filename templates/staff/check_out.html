@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehicle Check-Out - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-box-arrow-right text-warning me-2"></i> Vehicle Exit (Check-Out)
+            </h3>
+            <p class="text-muted mb-0">Record vehicle departure, calculate elapsed duration and automatic parking fee</p>
+        </div>
+
+        <!-- Search Form Card -->
+        <div class="content-card mb-4">
+            <form method="GET" action="{% url 'staff_check_out' %}">
+                <label class="form-label fw-bold text-dark mb-2">Search Active Vehicle Number Plate or Booking Reference</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="query" class="form-control" placeholder="e.g. BA-02-PA-1234 or SP-2026-..." value="{{ query }}" required autofocus>
+                    <button type="submit" class="btn btn-warning px-4 fw-bold">
+                        Fetch Parked Vehicle
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Active Vehicle Exit Calculation Card -->
+        {% if booking %}
+            <div class="content-card border-warning border-2 shadow">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <div>
+                        <span class="badge bg-warning text-dark px-3 py-1 fw-bold fs-6">
+                            <i class="bi bi-p-circle-fill me-1"></i> ACTIVE PARKED VEHICLE
+                        </span>
+                    </div>
+                    <div class="fw-bold text-dark fs-5">
+                        Ref: {{ booking.booking_reference }}
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded-3 h-100">
+                            <div class="text-muted small text-uppercase fw-semibold mb-1">Vehicle Info</div>
+                            <h4 class="fw-bold text-dark mb-1">{{ booking.vehicle.vehicle_number }}</h4>
+                            <div class="text-secondary">{{ booking.vehicle.vehicle_brand }} {{ booking.vehicle.vehicle_model }}</div>
+                            <span class="badge bg-secondary mt-1">{{ booking.vehicle.get_vehicle_type_display }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded-3 h-100">
+                            <div class="text-muted small text-uppercase fw-semibold mb-1">Occupied Slot</div>
+                            <h4 class="fw-bold text-danger mb-1">Slot {{ booking.parking_slot.slot_number }}</h4>
+                            <div class="text-secondary">{{ booking.parking_slot.parking_area.name }}</div>
+                            <small class="text-muted">{{ booking.parking_slot.parking_area.location }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Duration & Automated Fee Calculation Box (Ceiling logic) -->
+                <div class="alert alert-warning border-warning p-4 mb-4">
+                    <div class="row text-center">
+                        <div class="col-md-4 border-end">
+                            <span class="text-muted small text-uppercase fw-bold d-block">Entry Recorded</span>
+                            <div class="fw-bold fs-5 text-dark mt-1">{{ booking.record.entry_time|date:"H:i" }}</div>
+                            <small class="text-muted">{{ booking.record.entry_time|date:"M d, Y" }}</small>
+                        </div>
+                        <div class="col-md-4 border-end">
+                            <span class="text-muted small text-uppercase fw-bold d-block">Billable Duration</span>
+                            <div class="fw-bold fs-4 text-dark mt-1">{{ preview_duration }} hour(s)</div>
+                            <small class="text-muted">Rounded up via math.ceil()</small>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-muted small text-uppercase fw-bold d-block">Total Parking Fee</span>
+                            <div class="fw-bold fs-3 text-success mt-1">Rs. {{ preview_fee }}</div>
+                            <small class="text-muted">Pay at exit counter</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Check-Out Action Form -->
+                <form method="POST" action="{% url 'staff_check_out' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning btn-lg shadow-sm fw-bold">
+                            <i class="bi bi-check2-circle me-2"></i> Confirm Exit &amp; Free Parking Slot
+                        </button>
+                    </div>
+                </form>
+            </div>
+        {% elif query %}
+            <div class="alert alert-warning text-center py-4">
+                <i class="bi bi-info-circle fs-2 text-warning d-block mb-2"></i>
+                <h5 class="fw-bold">No Active Parked Vehicle Found</h5>
+                <p class="mb-0 text-muted">
+                    No vehicle with status <strong>ACTIVE</strong> was found matching "{{ query }}".
+                    The vehicle might have already completed exit or has not checked in yet.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

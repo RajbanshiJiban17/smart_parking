@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Area {{ area.name }} - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="mb-4">
+            <a href="{% url 'admin_parking_areas' %}" class="text-decoration-none small text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Parking Areas
+            </a>
+            <h3 class="fw-bold text-dark mt-2 mb-1">Edit Parking Area</h3>
+            <p class="text-muted mb-0">Update information for {{ area.name }}</p>
+        </div>
+
+        <div class="content-card">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Area Name *</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Location *</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                        <div class="text-danger small mt-1">{{ form.location.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'admin_parking_areas' %}" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i> Update Area
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

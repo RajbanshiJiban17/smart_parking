@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}All Bookings - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">System Bookings Directory</h3>
+        <p class="text-muted mb-0">Monitor, search, and verify all driver parking reservations and statuses</p>
+    </div>
+</div>
+
+<!-- Search & Filter Card -->
+<div class="content-card mb-4">
+    <form method="GET" action="{% url 'admin_bookings' %}" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control" placeholder="Search by reference, vehicle plate, or username..." value="{{ search }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">-- All Statuses --</option>
+                <option value="RESERVED" {% if status_filter == 'RESERVED' %}selected{% endif %}>Reserved</option>
+                <option value="ACTIVE" {% if status_filter == 'ACTIVE' %}selected{% endif %}>Active (Parked)</option>
+                <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'admin_bookings' %}" class="btn btn-light border">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Bookings Table -->
+<div class="content-card">
+    {% if page_obj %}
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Driver</th>
+                        <th>Vehicle</th>
+                        <th>Slot &amp; Area</th>
+                        <th>Booking Date</th>
+                        <th>Status</th>
+                        <th>Fee</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in page_obj %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'booking_detail' b.pk %}" class="fw-bold text-primary text-decoration-none">
+                                    {{ b.booking_reference }}
+                                </a>
+                                <small class="text-muted d-block">{{ b.created_at|date:"M d, H:i" }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ b.user.get_full_name|default:b.user.username }}</div>
+                                <small class="text-muted">{{ b.user.profile.phone_number|default:b.user.email }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ b.vehicle.vehicle_number }}</span>
+                                <small class="text-muted d-block">{{ b.vehicle.vehicle_brand }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">Slot {{ b.parking_slot.slot_number }}</div>
+                                <small class="text-muted">{{ b.parking_slot.parking_area.name }}</small>
+                            </td>
+                            <td>
+                                <div>{{ b.booking_date|date:"M d, Y" }}</div>
+                                <small class="text-muted">{{ b.expected_arrival_time|time:"H:i" }}</small>
+                            </td>
+                            <td>
+                                {% if b.status == 'RESERVED' %}
+                                    <span class="badge-status badge-reserved">Reserved</span>
+                                {% elif b.status == 'ACTIVE' %}
+                                    <span class="badge-status badge-active">Active</span>
+                                {% elif b.status == 'COMPLETED' %}
+                                    <span class="badge-status badge-completed">Completed</span>
+                                {% else %}
+                                    <span class="badge-status badge-cancelled">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if b.record and b.record.total_fee %}
+                                    <span class="fw-bold text-success">Rs. {{ b.record.total_fee }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'booking_detail' b.pk %}" class="btn btn-sm btn-light border" title="View details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-4 text-muted">
+            No bookings found matching query.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

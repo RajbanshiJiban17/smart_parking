@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking {{ booking.booking_reference }} - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <a href="{% url 'booking_list' %}" class="text-decoration-none small text-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Bookings
+                </a>
+                <h3 class="fw-bold text-dark mt-2 mb-1">Booking Confirmation Slip</h3>
+                <p class="text-muted mb-0">Reference: <strong>{{ booking.booking_reference }}</strong></p>
+            </div>
+            <div class="d-flex gap-2">
+                <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-printer me-1"></i> Print Slip
+                </button>
+                {% if booking.status == 'RESERVED' %}
+                    <a href="{% url 'booking_cancel' booking.pk %}" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-x-circle me-1"></i> Cancel Reservation
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="content-card">
+            <!-- Header with Status -->
+            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4">
+                <div>
+                    <span class="text-muted small text-uppercase fw-semibold">Status:</span>
+                    <div class="mt-1">
+                        {% if booking.status == 'RESERVED' %}
+                            <span class="badge-status badge-reserved fs-6"><i class="bi bi-clock"></i> RESERVED</span>
+                        {% elif booking.status == 'ACTIVE' %}
+                            <span class="badge-status badge-active fs-6"><i class="bi bi-p-circle"></i> ACTIVE (PARKED)</span>
+                        {% elif booking.status == 'COMPLETED' %}
+                            <span class="badge-status badge-completed fs-6"><i class="bi bi-check-circle"></i> COMPLETED</span>
+                        {% else %}
+                            <span class="badge-status badge-cancelled fs-6"><i class="bi bi-x-circle"></i> CANCELLED</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-end">
+                    <span class="text-muted small">Booked By:</span>
+                    <div class="fw-bold text-dark">{{ booking.user.get_full_name|default:booking.user.username }}</div>
+                    <small class="text-muted">{{ booking.user.profile.phone_number }}</small>
+                </div>
+            </div>
+
+            <!-- Two Column Details -->
+            <div class="row g-4 mb-4">
+                <!-- Vehicle Details -->
+                <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                            <i class="bi bi-car-front-fill text-primary me-2"></i> Vehicle Information
+                        </h6>
+                        <div class="mb-2">
+                            <span class="text-muted small d-block">Number Plate:</span>
+                            <span class="badge bg-light text-dark border fs-6 px-3 py-1 fw-bold">
+                                {{ booking.vehicle.vehicle_number }}
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted small d-block">Vehicle:</span>
+                            <strong>{{ booking.vehicle.vehicle_brand }} {{ booking.vehicle.vehicle_model }}</strong>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block">Category:</span>
+                            <span class="badge bg-secondary-subtle text-dark">
+                                {{ booking.vehicle.get_vehicle_type_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parking Slot Details -->
+                <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                            <i class="bi bi-geo-alt-fill text-danger me-2"></i> Parking Location
+                        </h6>
+                        <div class="mb-2">
+                            <span class="text-muted small d-block">Parking Area:</span>
+                            <strong>{{ booking.parking_slot.parking_area.name }}</strong>
+                            <small class="text-muted d-block">{{ booking.parking_slot.parking_area.location }}</small>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted small d-block">Slot Number:</span>
+                            <span class="badge bg-primary fs-6 px-3 py-1">
+                                Slot {{ booking.parking_slot.slot_number }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-muted small d-block">Rate:</span>
+                            <span class="text-success fw-semibold">
+                                {% if rate %}Rs. {{ rate.hourly_rate }} / hour{% else %}Standard Rate{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timing & Verification Details -->
+            <div class="border rounded-3 p-3 mb-4">
+                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-calendar-event-fill text-warning me-2"></i> Schedule &amp; Activity
+                </h6>
+                <div class="row">
+                    <div class="col-sm-6 col-md-3 mb-3">
+                        <span class="text-muted small d-block">Reservation Date:</span>
+                        <strong>{{ booking.booking_date|date:"M d, Y" }}</strong>
+                    </div>
+                    <div class="col-sm-6 col-md-3 mb-3">
+                        <span class="text-muted small d-block">Expected Arrival:</span>
+                        <strong>{{ booking.expected_arrival_time|time:"H:i" }}</strong>
+                    </div>
+                    <div class="col-sm-6 col-md-3 mb-3">
+                        <span class="text-muted small d-block">Vehicle Check-In:</span>
+                        {% if record and record.entry_time %}
+                            <strong class="text-success">{{ record.entry_time|date:"M d, H:i" }}</strong>
+                        {% else %}
+                            <span class="text-muted">Pending Check-In</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-6 col-md-3 mb-3">
+                        <span class="text-muted small d-block">Vehicle Check-Out:</span>
+                        {% if record and record.exit_time %}
+                            <strong class="text-dark">{{ record.exit_time|date:"M d, H:i" }}</strong>
+                        {% else %}
+                            <span class="text-muted">Pending Exit</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fee Calculation Summary (if completed) -->
+            {% if record and record.total_fee %}
+                <div class="alert alert-success d-flex justify-content-between align-items-center p-3">
+                    <div>
+                        <h6 class="fw-bold mb-1"><i class="bi bi-cash-coin me-2"></i> Parking Fee Calculation</h6>
+                        <small>Duration: <strong>{{ record.duration }} hour(s)</strong> (Ceiling rounded)</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="small text-uppercase">Total Amount Paid:</span>
+                        <h3 class="fw-bold mb-0 text-success">Rs. {{ record.total_fee }}</h3>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

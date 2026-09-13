@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="mb-4">
+            <a href="{% url 'vehicle_list' %}" class="text-decoration-none small text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Vehicles
+            </a>
+            <h3 class="fw-bold text-dark mt-2 mb-1">{{ title }}</h3>
+            <p class="text-muted mb-0">Enter your vehicle details accurately for parking identification</p>
+        </div>
+
+        <div class="content-card">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-secondary">Vehicle Number Plate *</label>
+                    {{ form.vehicle_number }}
+                    <small class="text-muted">Must be unique, e.g. BA-02-PA-1234 or DL-01-AB-1234</small>
+                    {% if form.vehicle_number.errors %}
+                        <div class="text-danger small mt-1">{{ form.vehicle_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-secondary">Vehicle Type *</label>
+                    {{ form.vehicle_type }}
+                    {% if form.vehicle_type.errors %}
+                        <div class="text-danger small mt-1">{{ form.vehicle_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold small text-secondary">Brand / Manufacturer *</label>
+                        {{ form.vehicle_brand }}
+                        {% if form.vehicle_brand.errors %}
+                            <div class="text-danger small mt-1">{{ form.vehicle_brand.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold small text-secondary">Model *</label>
+                        {{ form.vehicle_model }}
+                        {% if form.vehicle_model.errors %}
+                            <div class="text-danger small mt-1">{{ form.vehicle_model.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'vehicle_list' %}" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i> Save Vehicle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

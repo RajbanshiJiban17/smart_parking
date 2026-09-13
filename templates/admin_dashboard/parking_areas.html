@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Parking Areas - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Parking Area Management</h3>
+        <p class="text-muted mb-0">Define campuses, premises, and dedicated visitor parking facilities</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- List of Existing Areas -->
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-geo-alt-fill text-primary"></i> Registered Areas ({{ areas.count }})</h5>
+            </div>
+
+            {% if areas %}
+                <div class="table-responsive">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Total Slots</th>
+                                <th>Available</th>
+                                <th>Occupied</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in areas %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ a.name }}</div>
+                                        <small class="text-muted">{{ a.description|truncatewords:8 }}</small>
+                                    </td>
+                                    <td>{{ a.location }}</td>
+                                    <td><span class="badge bg-secondary">{{ a.total_slots }} slots</span></td>
+                                    <td><span class="badge bg-success">{{ a.available_slots_count }}</span></td>
+                                    <td><span class="badge bg-danger">{{ a.occupied_slots_count }}</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'admin_parking_area_edit' a.pk %}" class="btn btn-outline-secondary" title="Edit Area">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'admin_parking_area_delete' a.pk %}" class="btn btn-outline-danger" title="Delete Area">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4 text-muted">
+                    No parking areas defined yet. Create your first area using the form on the right.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Create Area Form -->
+    <div class="col-lg-4">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-plus-circle text-success"></i> Add Parking Area</h5>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Area Name *</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Location *</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                        <div class="text-danger small mt-1">{{ form.location.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i> Save Parking Area
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

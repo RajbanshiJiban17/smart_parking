@@ -1,0 +1,89 @@
+/* ==========================================================================
+   RESPONSIVE DESIGN STYLESHEET
+   Mobile, Tablet, and Desktop Breakpoints
+   ========================================================================== */
+
+/* Tablet & Mobile Screens (<= 992px) */
+@media (max-width: 992px) {
+    .app-wrapper {
+        position: relative;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: -260px;
+        z-index: 1045;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar.sidebar-open {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(2px);
+        z-index: 1040;
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+    }
+
+    .main-content {
+        padding: 1.25rem 1rem;
+        width: 100%;
+    }
+
+    .slot-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.85rem;
+    }
+
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Mobile Screens (<= 576px) */
+@media (max-width: 576px) {
+    .main-content {
+        padding: 1rem 0.75rem;
+    }
+
+    .slot-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+    }
+
+    .slot-card {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .slot-card .slot-number {
+        font-size: 1.2rem;
+    }
+
+    .auth-card {
+        padding: 1.75rem 1.25rem;
+        border-radius: 12px;
+    }
+
+    .content-card {
+        padding: 1rem;
+    }
+
+    .btn-responsive {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}

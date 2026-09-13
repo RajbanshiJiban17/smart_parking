@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Driver Dashboard</h3>
+        <p class="text-muted mb-0">Manage your vehicles and active parking reservations</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'vehicle_add' %}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add Vehicle
+        </a>
+        <a href="{% url 'parking_slots' %}" class="btn btn-primary">
+            <i class="bi bi-geo-alt-fill me-1"></i> Find &amp; Book Slot
+        </a>
+    </div>
+</div>
+
+<!-- 4 Bootstrap Metric Cards (As specified in requirement #6) -->
+<div class="row g-3 mb-4">
+    <!-- Total Registered Vehicles -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Total Vehicles</div>
+                    <div class="stat-value">{{ total_vehicles }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-car-front-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'vehicle_list' %}" class="small text-decoration-none mt-2 d-inline-block text-primary fw-semibold">
+                Manage vehicles &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Active Parking Bookings -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Active Bookings</div>
+                    <div class="stat-value">{{ active_bookings }}</div>
+                </div>
+                <div class="stat-icon icon-yellow">
+                    <i class="bi bi-bookmark-check-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'booking_list' %}?status=RESERVED" class="small text-decoration-none mt-2 d-inline-block text-warning fw-semibold">
+                View active reservations &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Available Parking Slots -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Available Slots</div>
+                    <div class="stat-value">{{ available_slots }}</div>
+                </div>
+                <div class="stat-icon icon-green">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'parking_slots' %}?status=AVAILABLE" class="small text-decoration-none mt-2 d-inline-block text-success fw-semibold">
+                Browse available slots &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Parking History -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Parking History</div>
+                    <div class="stat-value">{{ completed_history }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+            </div>
+            <a href="{% url 'parking_history' %}" class="small text-decoration-none mt-2 d-inline-block text-secondary fw-semibold">
+                View past records &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Active & Recent Bookings -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-calendar2-check-fill text-primary"></i> Recent Bookings</h5>
+                <a href="{% url 'booking_list' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+
+            {% if recent_bookings %}
+                <div class="table-responsive">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Vehicle</th>
+                                <th>Area &amp; Slot</th>
+                                <th>Date &amp; Time</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in recent_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'booking_detail' b.pk %}" class="fw-bold text-dark text-decoration-none">
+                                            {{ b.booking_reference }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">{{ b.vehicle.vehicle_number }}</span>
+                                        <small class="text-muted d-block">{{ b.vehicle.vehicle_brand }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ b.parking_slot.parking_area.name }}</div>
+                                        <small class="badge bg-secondary">Slot {{ b.parking_slot.slot_number }}</small>
+                                    </td>
+                                    <td>
+                                        <div>{{ b.booking_date|date:"M d, Y" }}</div>
+                                        <small class="text-muted">{{ b.expected_arrival_time|time:"H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if b.status == 'RESERVED' %}
+                                            <span class="badge-status badge-reserved"><i class="bi bi-clock"></i> Reserved</span>
+                                        {% elif b.status == 'ACTIVE' %}
+                                            <span class="badge-status badge-active"><i class="bi bi-p-circle"></i> Parked (Active)</span>
+                                        {% elif b.status == 'COMPLETED' %}
+                                            <span class="badge-status badge-completed"><i class="bi bi-check-circle"></i> Completed</span>
+                                        {% else %}
+                                            <span class="badge-status badge-cancelled"><i class="bi bi-x-circle"></i> Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'booking_detail' b.pk %}" class="btn btn-sm btn-light border" title="View details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-x text-muted display-4"></i>
+                    <p class="text-muted mt-3 mb-2">No parking reservations found yet.</p>
+                    <a href="{% url 'parking_slots' %}" class="btn btn-primary btn-sm">Find a Parking Slot Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Registered Vehicles Quick Card -->
+    <div class="col-lg-4">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-car-front-fill text-primary"></i> My Vehicles</h5>
+                <a href="{% url 'vehicle_add' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> Add</a>
+            </div>
+
+            {% if recent_vehicles %}
+                <div class="list-group list-group-flush">
+                    {% for v in recent_vehicles %}
+                        <div class="list-group-item px-0 py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold text-dark">{{ v.vehicle_number }}</div>
+                                <small class="text-muted">{{ v.vehicle_brand }} {{ v.vehicle_model }} &bull; {{ v.get_vehicle_type_display }}</small>
+                            </div>
+                            <div>
+                                <a href="{% url 'vehicle_edit' v.pk %}" class="btn btn-sm btn-outline-secondary p-1 px-2" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="{% url 'vehicle_list' %}" class="small text-decoration-none fw-semibold">View All Registered Vehicles &rarr;</a>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-car-front text-muted fs-1"></i>
+                    <p class="text-muted small mt-2">No vehicles registered yet.</p>
+                    <a href="{% url 'vehicle_add' %}" class="btn btn-sm btn-outline-primary">Register Your First Vehicle</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

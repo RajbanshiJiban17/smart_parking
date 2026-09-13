@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Smart Parking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Administrator Control Panel</h3>
+        <p class="text-muted mb-0">Live operational overview, occupancy metrics, and parking revenue statistics</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'staff_check_in' %}" class="btn btn-outline-success">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Quick Entry
+        </a>
+        <a href="{% url 'staff_check_out' %}" class="btn btn-outline-warning">
+            <i class="bi bi-box-arrow-right me-1"></i> Quick Exit
+        </a>
+        <a href="{% url 'admin_reports' %}" class="btn btn-primary">
+            <i class="bi bi-file-earmark-bar-graph me-1"></i> Reports
+        </a>
+    </div>
+</div>
+
+<!-- Admin Dashboard Stat Cards (Section 18) -->
+<div class="row g-3 mb-4">
+    <!-- Total Users -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value">{{ total_users }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'admin_users' %}" class="small text-decoration-none mt-2 d-inline-block text-primary fw-semibold">
+                Manage users &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Total Vehicles -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Total Vehicles</div>
+                    <div class="stat-value">{{ total_vehicles }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-truck-front-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'admin_vehicles' %}" class="small text-decoration-none mt-2 d-inline-block text-secondary fw-semibold">
+                View all vehicles &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Total Parking Areas -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Parking Areas</div>
+                    <div class="stat-value">{{ total_areas }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'admin_parking_areas' %}" class="small text-decoration-none mt-2 d-inline-block text-primary fw-semibold">
+                Configure areas &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Total Parking Slots -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label">Total Slots</div>
+                    <div class="stat-value">{{ total_slots }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </div>
+            </div>
+            <a href="{% url 'admin_parking_slots' %}" class="small text-decoration-none mt-2 d-inline-block text-primary fw-semibold">
+                Manage bays &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Available Slots -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card border-success-subtle">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label text-success">Available Slots</div>
+                    <div class="stat-value text-success">{{ available_slots }}</div>
+                </div>
+                <div class="stat-icon icon-green">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+            </div>
+            <span class="small text-muted mt-2 d-inline-block">Ready for drivers</span>
+        </div>
+    </div>
+
+    <!-- Occupied Slots -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card border-danger-subtle">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label text-danger">Occupied Slots</div>
+                    <div class="stat-value text-danger">{{ occupied_slots }}</div>
+                </div>
+                <div class="stat-icon icon-red">
+                    <i class="bi bi-car-front-fill"></i>
+                </div>
+            </div>
+            <span class="small text-muted mt-2 d-inline-block">Currently parked</span>
+        </div>
+    </div>
+
+    <!-- Reserved Slots -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card border-warning-subtle">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label text-warning">Reserved Slots</div>
+                    <div class="stat-value text-warning">{{ reserved_slots }}</div>
+                </div>
+                <div class="stat-icon icon-yellow">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+            </div>
+            <span class="small text-muted mt-2 d-inline-block">Awaiting check-in</span>
+        </div>
+    </div>
+
+    <!-- Today's Revenue -->
+    <div class="col-sm-6 col-md-4 col-xl-3">
+        <div class="stat-card border-primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-label text-primary">Today's Revenue</div>
+                    <div class="stat-value text-primary">Rs. {{ today_revenue }}</div>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+            <span class="small text-muted mt-2 d-inline-block">All-time: Rs. {{ total_revenue }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Operational Overview & Recent Bookings -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-activity text-primary"></i> Recent Booking Traffic</h5>
+                <a href="{% url 'admin_bookings' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+
+            {% if recent_bookings %}
+                <div class="table-responsive">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Driver</th>
+                                <th>Vehicle</th>
+                                <th>Slot</th>
+                                <th>Status</th>
+                                <th class="text-end">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in recent_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'booking_detail' b.pk %}" class="fw-bold text-primary text-decoration-none">
+                                            {{ b.booking_reference }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div>{{ b.user.get_full_name|default:b.user.username }}</div>
+                                        <small class="text-muted">{{ b.user.profile.phone_number }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">{{ b.vehicle.vehicle_number }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">Slot {{ b.parking_slot.slot_number }}</span>
+                                        <small class="text-muted d-block">{{ b.parking_slot.parking_area.name }}</small>
+                                    </td>
+                                    <td>
+                                        {% if b.status == 'RESERVED' %}
+                                            <span class="badge-status badge-reserved"><i class="bi bi-clock"></i> Reserved</span>
+                                        {% elif b.status == 'ACTIVE' %}
+                                            <span class="badge-status badge-active"><i class="bi bi-p-circle"></i> Active</span>
+                                        {% elif b.status == 'COMPLETED' %}
+                                            <span class="badge-status badge-completed"><i class="bi bi-check-circle"></i> Completed</span>
+                                        {% else %}
+                                            <span class="badge-status badge-cancelled"><i class="bi bi-x-circle"></i> Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'booking_detail' b.pk %}" class="btn btn-sm btn-light border" title="Inspect">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted py-3 mb-0 text-center">No bookings recorded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Navigation Panels for Administrator -->
+    <div class="col-lg-4">
+        <div class="content-card">
+            <div class="card-header-clean">
+                <h5><i class="bi bi-gear-fill text-secondary"></i> Quick Management</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'admin_parking_areas' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Parking Areas</div>
+                        <small class="text-muted">Create and manage zones</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="{% url 'admin_parking_slots' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Parking Slots</div>
+                        <small class="text-muted">Add bays and change statuses</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="{% url 'admin_rates' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Hourly Rates</div>
+                        <small class="text-muted">Update fee per vehicle category</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="{% url 'admin_reports' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Reports &amp; Analytics</div>
+                        <small class="text-muted">Generate daily revenue summaries</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="{% url 'admin_users' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">User Management</div>
+                        <small class="text-muted">Activate or deactivate accounts</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

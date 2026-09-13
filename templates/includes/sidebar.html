@@ -1,0 +1,144 @@
+<aside class="sidebar" id="sidebar">
+    <div class="brand-title">
+        <i class="bi bi-p-square-fill text-primary fs-3"></i>
+        <div>
+            <span class="d-block lh-1 text-white">Smart Parking</span>
+            <small class="text-secondary" style="font-size: 0.7rem;">Parking Management</small>
+        </div>
+    </div>
+
+    <ul class="sidebar-menu">
+        <!-- DRIVER / USER NAVIGATION -->
+        <li class="nav-header">Driver Menu</li>
+        <li class="nav-item">
+            <a href="{% url 'dashboard' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>User Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'vehicle_list' %}"
+                class="nav-link {% if 'vehicle' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-car-front-fill"></i>
+                <span>My Vehicles</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'parking_slots' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'parking_slots' %}active{% endif %}">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+                <span>Parking Slots</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'booking_list' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'booking_list' or request.resolver_match.url_name == 'booking_create' %}active{% endif %}">
+                <i class="bi bi-bookmark-check-fill"></i>
+                <span>Bookings</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'parking_history' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'parking_history' %}active{% endif %}">
+                <i class="bi bi-clock-history"></i>
+                <span>Parking History</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'profile' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                <i class="bi bi-person-gear"></i>
+                <span>My Profile</span>
+            </a>
+        </li>
+
+        <!-- STAFF & ADMIN ENTRY / EXIT OPERATIONS -->
+        {% if user.profile.role in 'ADMIN,STAFF' or user.is_staff or user.is_superuser %}
+        <li class="nav-header mt-3">Staff Operations</li>
+        <li class="nav-item">
+            <a href="{% url 'staff_check_in' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'staff_check_in' %}active{% endif %}">
+                <i class="bi bi-box-arrow-in-right text-success"></i>
+                <span>Vehicle Check-In</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'staff_check_out' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'staff_check_out' %}active{% endif %}">
+                <i class="bi bi-box-arrow-right text-warning"></i>
+                <span>Vehicle Check-Out</span>
+            </a>
+        </li>
+        {% endif %}
+
+        <!-- ADMINISTRATOR PORTAL -->
+        {% if user.profile.role == 'ADMIN' or user.is_superuser %}
+        <li class="nav-header mt-3">Admin Portal</li>
+        <li class="nav-item">
+            <a href="{% url 'admin_dashboard' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                <i class="bi bi-bar-chart-fill text-primary"></i>
+                <span>Admin Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_parking_areas' %}"
+                class="nav-link {% if 'parking_area' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Parking Areas</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_parking_slots' %}"
+                class="nav-link {% if 'parking_slot' in request.resolver_match.url_name and 'admin' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-view-list"></i>
+                <span>Parking Slots</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_bookings' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
+                <i class="bi bi-journal-check"></i>
+                <span>All Bookings</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_vehicles' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'admin_vehicles' %}active{% endif %}">
+                <i class="bi bi-truck-front-fill"></i>
+                <span>All Vehicles</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_rates' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'admin_rates' %}active{% endif %}">
+                <i class="bi bi-cash-stack"></i>
+                <span>Parking Rates</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_reports' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                <span>Reports & Revenue</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin_users' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+                <i class="bi bi-people-fill"></i>
+                <span>User Accounts</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <!-- Logout footer in sidebar -->
+    <div class="p-3 border-top border-secondary border-opacity-25 mt-auto">
+        <a href="{% url 'logout' %}"
+            class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-box-arrow-right"></i> Log Out
+        </a>
+    </div>
+</aside>
