@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: smart-parking-system
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn smart_parking.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: "True"
